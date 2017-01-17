@@ -8,16 +8,16 @@ val macwire = "com.softwaremill.macwire" %% "macros" % "2.2.5" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.1" % Test
 
 lazy val `gameranker` = (project in file("."))
-  .aggregate(`gameranker-api`, `gameranker-impl`, `gameranker-stream-api`, `gameranker-stream-impl`)
+  .aggregate(gamerankerPlayerApi, gamerankerPlayerImpl)
 
-lazy val `gameranker-api` = (project in file("gameranker-api"))
+lazy val gamerankerPlayerApi = (project in file("gameranker-player-api"))
   .settings(
     libraryDependencies ++= Seq(
       lagomScaladslApi
     )
   )
 
-lazy val `gameranker-impl` = (project in file("gameranker-impl"))
+lazy val gamerankerPlayerImpl = (project in file("gameranker-player-impl"))
   .enablePlugins(LagomScala)
   .settings(
     libraryDependencies ++= Seq(
@@ -28,23 +28,4 @@ lazy val `gameranker-impl` = (project in file("gameranker-impl"))
     )
   )
   .settings(lagomForkedTestSettings: _*)
-  .dependsOn(`gameranker-api`)
-
-lazy val `gameranker-stream-api` = (project in file("gameranker-stream-api"))
-  .settings(
-    libraryDependencies ++= Seq(
-      lagomScaladslApi
-    )
-  )
-
-lazy val `gameranker-stream-impl` = (project in file("gameranker-stream-impl"))
-  .enablePlugins(LagomScala)
-  .settings(
-    libraryDependencies ++= Seq(
-      lagomScaladslTestKit,
-      macwire,
-      scalaTest
-    )
-  )
-  .dependsOn(`gameranker-stream-api`, `gameranker-api`)
-
+  .dependsOn(gamerankerPlayerApi)
