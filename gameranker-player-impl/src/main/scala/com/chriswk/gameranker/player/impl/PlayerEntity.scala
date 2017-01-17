@@ -11,7 +11,24 @@ class PlayerEntity extends PersistentEntity {
   override type Command = PlayerCommand
   override type Event = PlayerEvent
   override type State = Option[Player]
-
+  override def initialState = None
+  override def behavior: Behavior = {
+    case Some(player) =>
+      Actions().onReadOnlyCommand[GetPlayer.type, Option[Player]]{
+        case (GetPlayer, ctx, state) => ctx.reply(state)
+      }.onReadOnlyCommand[CreatePlayer, Done] {
+        case (CreatePlayer(name), ctx, state) => ctx.invalidCommand("Player already exists")
+      }
+    case None =>
+      Actions().onReadOnlyCommand[GetPlayer.type, Option[Player]] {
+        case (GetPlayer, ctx, state) => ctx.reply(state)
+      }.onCommand[CreatePlayer, Done] {
+        case (CreatePlayer(name), ctx, state) =>
+          ctx.thenPersist(PlayerCreated(name), _ => ctx.reply(Done))
+      }.onEvent {
+        case (PlayerCreated(name), state) => Some(Player(name))
+      }
+  }
 }
 
 case class Player(name: String) extends Jsonable

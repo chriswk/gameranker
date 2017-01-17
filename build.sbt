@@ -49,7 +49,8 @@ lazy val gamerankerPlayerImpl = (project in file("gameranker-player-impl"))
     libraryDependencies ++= Seq(
       lagomScaladslPersistenceCassandra,
       macwire,
-      scalaTest
+      scalaTest,
+      lagomScaladslTestKit
     )
   )
   .settings(lagomForkedTestSettings: _*)
